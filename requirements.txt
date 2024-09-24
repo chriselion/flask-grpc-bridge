@@ -1,0 +1,8 @@
+flask
+requests
+protobuf
+grpcio
+
+# Test + lint requirements - TODO split into separate file
+pytest
+pre-commit
