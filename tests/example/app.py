@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, Response
 import functools
 from tests.example.proto.hello_world_pb2 import HelloRequest, HelloReply
 from tests.example.proto import hello_world_pb2
@@ -15,7 +15,7 @@ def hello_world() -> str:
 
 CONTENT_TYPE_HEADER = "Content-Type"
 # TODO Support more - https://stackoverflow.com/questions/30505408/what-is-the-correct-protobuf-content-type
-PROTOBUF_HEADER_VALUES = frozenset(["application/protobuf"])
+PROTOBUF_CONTENT_TYPE = "application/protobuf"
 
 
 def rpc(service_module, service_name, method_name):
@@ -43,7 +43,7 @@ def rpc(service_module, service_name, method_name):
                 is_body_proto = False
             except UnsupportedMediaType:
                 is_body_proto = True
-                raise NotImplementedError()
+                input_message.ParseFromString(request.data)
             # TODO handle parse errors, unknown fields etc as 4xx
 
             # Make the function call
@@ -51,7 +51,10 @@ def rpc(service_module, service_name, method_name):
 
             # Return the response in the same format
             if is_body_proto:
-                raise NotImplementedError()
+                response_bytes = ret.SerializeToString()
+                return Response(
+                    response_bytes, 200, {CONTENT_TYPE_HEADER: PROTOBUF_CONTENT_TYPE}
+                )
             else:
                 # TODO parse options, handle int64
                 response_json = json_format.MessageToDict(ret)

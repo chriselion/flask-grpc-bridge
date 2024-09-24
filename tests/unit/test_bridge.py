@@ -1,4 +1,5 @@
-from tests.example.app import app
+from tests.example.app import app, CONTENT_TYPE_HEADER, PROTOBUF_CONTENT_TYPE
+from tests.example.proto.hello_world_pb2 import HelloReply, HelloRequest
 
 
 def test_app():
@@ -9,9 +10,26 @@ def test_app():
 
 def test_hello_rpc_json():
     client = app.test_client()
-    resp = client.post("/Greeter/SayHello/", json={"name": "Monty"})
+    resp = client.post("/Greeter/SayHello/", json={"name": "Jason"})
 
     assert resp.status_code == 200
 
     body = resp.json
-    assert body == {"message": "Hello, Monty"}
+    assert body == {"message": "Hello, Jason"}
+
+
+def test_hello_rpc_binary():
+    client = app.test_client()
+
+    req = HelloRequest(name="Benny")
+    resp = client.post(
+        "/Greeter/SayHello/",
+        data=req.SerializeToString(),
+        headers={CONTENT_TYPE_HEADER: PROTOBUF_CONTENT_TYPE},
+    )
+
+    assert resp.status_code == 200
+
+    resp_message = HelloReply()
+    resp_message.ParseFromString(resp.data)
+    assert resp_message.message == "Hello, Benny"
