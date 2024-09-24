@@ -10,9 +10,10 @@ app = Flask(__name__)
 def hello_world() -> str:
     return "<p>Hello, World!</p>"
 
+
 def rpc(service_module, service_name, method_name):
     route = f"/{service_name}/{method_name}/"
-    #breakpoint()
+    # breakpoint()
     module_descriptor = service_module.DESCRIPTOR
     service_descriptor = module_descriptor.services_by_name[service_name]
     method_descriptor = service_descriptor.methods_by_name[method_name]
@@ -37,13 +38,14 @@ def rpc(service_module, service_name, method_name):
 
         return rpc_inner
 
-
     return rpc_decorator
+
 
 @rpc(hello_world_pb2, "Greeter", "SayHello")
 def rpc_impl(req: HelloRequest) -> HelloReply:
     message = "Hello, " + (req.name or "world")
     resp = HelloReply(message=message)
     return resp
+
 
 print(app.url_map)

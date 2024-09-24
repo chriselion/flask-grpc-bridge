@@ -6,6 +6,7 @@ def test_app():
     resp = client.get("/")
     assert resp.status_code == 200
 
+
 def test_hello_rpc():
     client = app.test_client()
     resp = client.get("/Greeter/SayHello/")
