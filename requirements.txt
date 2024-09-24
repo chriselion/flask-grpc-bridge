@@ -2,6 +2,7 @@ flask
 requests
 protobuf
 grpcio
+grpcio-tools
 
 # Test + lint requirements - TODO split into separate file
 pytest
