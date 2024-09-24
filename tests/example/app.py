@@ -1,7 +1,9 @@
-from flask import Flask
+from flask import Flask, request
 import functools
 from tests.example.proto.hello_world_pb2 import HelloRequest, HelloReply
 from tests.example.proto import hello_world_pb2
+from google.protobuf import json_format
+from werkzeug.exceptions import UnsupportedMediaType
 
 app = Flask(__name__)
 
@@ -11,13 +13,18 @@ def hello_world() -> str:
     return "<p>Hello, World!</p>"
 
 
+CONTENT_TYPE_HEADER = "Content-Type"
+# TODO Support more - https://stackoverflow.com/questions/30505408/what-is-the-correct-protobuf-content-type
+PROTOBUF_HEADER_VALUES = frozenset(["application/protobuf"])
+
+
 def rpc(service_module, service_name, method_name):
     route = f"/{service_name}/{method_name}/"
-    # breakpoint()
+
     module_descriptor = service_module.DESCRIPTOR
     service_descriptor = module_descriptor.services_by_name[service_name]
     method_descriptor = service_descriptor.methods_by_name[method_name]
-    # TODO compare against function's input and output types
+    # TODO compare against function's input and output type annotations
     # TODO ^ at type-check time
     input_type = method_descriptor.input_type._concrete_class
     output_type = method_descriptor.input_type._concrete_class  # noqa
@@ -25,16 +32,33 @@ def rpc(service_module, service_name, method_name):
     def rpc_decorator(func):
         @functools.wraps(func)
         def rpc_inner(*args, **kwargs):
-            # Before
+
             input_message = input_type()
-            # TODO from json or binary
+            # Read the request from either the json body, or directly as bytes
+            try:
+                # TODO parse options
+                json_format.ParseDict(
+                    request.json, input_message, ignore_unknown_fields=True
+                )
+                is_body_proto = False
+            except UnsupportedMediaType:
+                is_body_proto = True
+                raise NotImplementedError()
+            # TODO handle parse errors, unknown fields etc as 4xx
+
+            # Make the function call
             ret = func(input_message)
-            # After
-            # TODO to json or binary
-            return str(ret)
+
+            # Return the response in the same format
+            if is_body_proto:
+                raise NotImplementedError()
+            else:
+                # TODO parse options, handle int64
+                response_json = json_format.MessageToDict(ret)
+                return response_json
 
         print(f"Registering {route=}")
-        app.add_url_rule(route, view_func=rpc_inner)
+        app.add_url_rule(route, view_func=rpc_inner, methods=["POST"])
 
         return rpc_inner
 

@@ -7,7 +7,11 @@ def test_app():
     assert resp.status_code == 200
 
 
-def test_hello_rpc():
+def test_hello_rpc_json():
     client = app.test_client()
-    resp = client.get("/Greeter/SayHello/")
+    resp = client.post("/Greeter/SayHello/", json={"name": "Monty"})
+
     assert resp.status_code == 200
+
+    body = resp.json
+    assert body == {"message": "Hello, Monty"}
