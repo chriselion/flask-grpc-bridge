@@ -1,3 +1,5 @@
+import types
+
 from flask import Flask, request, Response
 import functools
 from google.protobuf import json_format
@@ -10,13 +12,14 @@ PROTOBUF_CONTENT_TYPE = "application/protobuf"
 
 
 class Bridge:
-    def __init__(self, app: Flask, service_module, service_name: str):
+    def __init__(self, app: Flask, service_module: types.ModuleType, service_name: str):
         self.app = app
         self.service_name = service_name
         self.module_descriptor = service_module.DESCRIPTOR
         self.service_descriptor = self.module_descriptor.services_by_name[service_name]
 
     def rpc(self, method_name: str | None = None):
+        # TODO type annotations so wrapped types aren't lost
         def rpc_decorator(func):
             nonlocal method_name
             method_name = method_name or func.__name__
@@ -61,6 +64,7 @@ class Bridge:
 
             route = f"/{self.service_name}/{method_name}/"
             print(f"Registering {route=}")
+            # TODO option for methods
             self.app.add_url_rule(route, view_func=rpc_inner, methods=["POST"])
 
             return rpc_inner

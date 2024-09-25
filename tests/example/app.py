@@ -14,7 +14,7 @@ def hello_world() -> str:
 bridge = Bridge(app, hello_world_pb2, "Greeter")
 
 
-@bridge.rpc("SayHello")
+@bridge.rpc()
 def SayHello(req: HelloRequest) -> HelloReply:
     message = "Hello, " + (req.name or "world")
     resp = HelloReply(message=message)
