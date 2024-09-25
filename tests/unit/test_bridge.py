@@ -1,6 +1,6 @@
 from flask_rpc_bridge.bridge import CONTENT_TYPE_HEADER, PROTOBUF_CONTENT_TYPE
 
-from tests.example.app import app
+from tests.example.app import app, SayHello
 from tests.example.proto.hello_world_pb2 import HelloReply, HelloRequest
 
 
@@ -35,3 +35,10 @@ def test_hello_rpc_binary():
     resp_message = HelloReply()
     resp_message.ParseFromString(resp.data)
     assert resp_message.message == "Hello, Benny"
+
+
+def test_original_func():
+    # Make sure the original function is callable here
+    req = HelloRequest()
+    resp = SayHello(req)
+    assert resp.message == "Hello, world"
