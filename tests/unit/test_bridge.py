@@ -1,4 +1,6 @@
-from tests.example.app import app, CONTENT_TYPE_HEADER, PROTOBUF_CONTENT_TYPE
+from flask_rpc_bridge.bridge import CONTENT_TYPE_HEADER, PROTOBUF_CONTENT_TYPE
+
+from tests.example.app import app
 from tests.example.proto.hello_world_pb2 import HelloReply, HelloRequest
 
 
