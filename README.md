@@ -1,4 +1,4 @@
-# flaskRpcBridge
+# flask-grpc-bridge
 Bridge between Flask and gRPC. `flask_grpc_bridge` allows you to define RPC services and methods using protobufs,
 but serve them using Flask. The resulting Flask endpoints can accept either JSON or binary representations of the
 request messages, and return the corresponding response message.

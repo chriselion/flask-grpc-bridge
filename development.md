@@ -1,11 +1,11 @@
 ## Development
 ```commandline
 # Build the image
-docker build . -t flask-rpc-bridge:local
+docker build . -t flask-grpc-bridge:local
 
 # Run unit and integration tests
-docker run --rm -it -v $(pwd):/app flask-rpc-bridge:local pytest
+docker run --rm -it -v $(pwd):/app flask-grpc-bridge:local pytest
 
 # Get a shell for local development
-docker run --rm -it -v $(pwd):/app flask-rpc-bridge:local bash
+docker run --rm -it -v $(pwd):/app flask-grpc-bridge:local bash
 ```
