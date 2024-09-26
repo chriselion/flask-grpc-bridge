@@ -30,8 +30,6 @@ jobs:
       - name: Test with pytest
         run: |
           pytest --cov=flask_grpc_bridge --cov=tests/unit --cov-report=html
-          pwd
-          ls -la
       - name: Upload coverage data
         uses: actions/upload-artifact@v4
         with:
@@ -60,6 +58,7 @@ jobs:
 
       - name: Combine coverage & fail if it's <100%
         run: |
+          ls -la
           python -Im pip install --upgrade coverage[toml]
 
           python -Im coverage combine
