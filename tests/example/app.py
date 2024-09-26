@@ -1,7 +1,7 @@
 from flask import Flask
 from tests.example.proto.hello_world_pb2 import HelloRequest, HelloReply
 from tests.example.proto import hello_world_pb2
-from flask_rpc_bridge.bridge import Bridge
+from flask_grpc_bridge.bridge import Bridge
 
 app = Flask(__name__)
 
