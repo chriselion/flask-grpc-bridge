@@ -27,4 +27,10 @@ jobs:
           pip install -r requirements.txt
       - name: Test with pytest
         run: |
-          pytest
+          pytest --cov=flask_grpc_bridge --cov=tests/unit --cov-report=html
+
+          # Report and write to summary.
+          python -Im coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+
+          # Report again and fail if under 100%.
+          python -Im coverage report --fail-under=100

@@ -6,4 +6,5 @@ grpcio-tools
 
 # Test + lint requirements - TODO split into separate file
 pytest
+pytest-cov
 pre-commit
