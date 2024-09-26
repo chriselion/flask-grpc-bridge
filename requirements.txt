@@ -1,10 +1,11 @@
 flask
-requests
 protobuf
 grpcio
 grpcio-tools
+typing_extensions
 
 # Test + lint requirements - TODO split into separate file
+requests
 pytest
 pytest-cov
 pre-commit
