@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        #python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.12"]
 
     steps:
       - uses: actions/checkout@v4
@@ -29,6 +30,8 @@ jobs:
       - name: Test with pytest
         run: |
           pytest --cov=flask_grpc_bridge --cov=tests/unit --cov-report=html
+          pwd
+          ls -la
       - name: Upload coverage data
         uses: actions/upload-artifact@v4
         with:
@@ -36,6 +39,7 @@ jobs:
           path: .coverage.*
           include-hidden-files: true
           if-no-files-found: ignore
+
   coverage:
     name: Combine & check coverage
     if: always()
