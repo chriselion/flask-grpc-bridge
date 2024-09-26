@@ -1,3 +1,4 @@
+from __future__ import annotations
 import types
 
 from flask import Flask, request, Response
