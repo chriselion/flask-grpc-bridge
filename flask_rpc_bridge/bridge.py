@@ -3,12 +3,17 @@ import types
 from flask import Flask, request, Response
 import functools
 from google.protobuf import json_format
+from google.protobuf.message import Message
 from werkzeug.exceptions import UnsupportedMediaType
 
+from typing import ParamSpec, TypeVar, Callable
 
 CONTENT_TYPE_HEADER = "Content-Type"
 # TODO Support more - https://stackoverflow.com/questions/30505408/what-is-the-correct-protobuf-content-type
 PROTOBUF_CONTENT_TYPE = "application/protobuf"
+
+P = ParamSpec("P")
+R = TypeVar("R", bound=Message)
 
 
 class Bridge:
@@ -18,14 +23,17 @@ class Bridge:
         self.module_descriptor = service_module.DESCRIPTOR
         self.service_descriptor = self.module_descriptor.services_by_name[service_name]
 
-    def rpc(self, method_name: str | None = None):
+    def rpc(
+        self, method_name: str | None = None
+    ) -> Callable[[Callable[P, R]], Callable[P, R]]:
         # TODO type annotations so wrapped types aren't lost
-        def rpc_decorator(func):
+        def rpc_decorator(func: Callable[P, R]) -> Callable[P, R]:
             nonlocal method_name
             method_name = method_name or func.__name__
 
+            # TODO return type? Whatever Flask methods are supposed to be
             @functools.wraps(func)
-            def rpc_inner(*args, **kwargs):
+            def rpc_inner(*args: P.args, **kwargs: P.kwargs):
 
                 method_descriptor = self.service_descriptor.methods_by_name[method_name]
                 # TODO compare against function's input and output type annotations
@@ -67,6 +75,9 @@ class Bridge:
             # TODO option for methods
             self.app.add_url_rule(route, view_func=rpc_inner, methods=["POST"])
 
-            return rpc_inner
+            # Return the original decorated function here (not rpc_inner like you'd do in a normal decorator)
+            # So that it can still be called without the request/Response stuff.
+            # This makes sure it still works as e.g. a gRPC handler
+            return func
 
         return rpc_decorator
