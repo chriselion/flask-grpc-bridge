@@ -1,3 +1,4 @@
+from __future__ import annotations
 import types
 
 from flask import Flask, request, Response
@@ -6,7 +7,13 @@ from google.protobuf import json_format
 from google.protobuf.message import Message
 from werkzeug.exceptions import UnsupportedMediaType
 
-from typing import ParamSpec, TypeVar, Callable
+from typing import TypeVar, Callable
+
+try:
+    from typing import ParamSpec
+except ImportError:
+    # Support pre-3.10 versions
+    from typing_extensions import ParamSpec  # type: ignore[assignment]
 
 CONTENT_TYPE_HEADER = "Content-Type"
 # TODO Support more - https://stackoverflow.com/questions/30505408/what-is-the-correct-protobuf-content-type
