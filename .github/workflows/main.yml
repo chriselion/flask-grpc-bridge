@@ -13,8 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        #python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        python-version: ["3.8", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     env:
       COVERAGE_FILE: .coverage.${{ matrix.python-version }}
@@ -60,7 +59,6 @@ jobs:
 
       - name: Combine coverage & fail if it's <100%
         run: |
-          ls -la
           python -Im pip install --upgrade coverage[toml]
 
           python -Im coverage combine
