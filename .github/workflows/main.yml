@@ -16,6 +16,8 @@ jobs:
         #python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         python-version: ["3.8", "3.12"]
 
+    env:
+      COVERAGE_FILE: .coverage.${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
@@ -34,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-data-${{ matrix.python-version }}
-          path: .coverage*
+          path: .coverage.*
           include-hidden-files: true
           if-no-files-found: ignore
 
